@@ -1,229 +1,651 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EDI 301 Backend API</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EDI 301 — Backend API</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #121932;
+      --soft: #1b2447;
+      --text: #eaf0ff;
+      --muted: #b6c2e2;
+      --accent: #58a6ff;
+      --accent-2: #ffd166;
+      --border: rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 40px;
-  background: #0b1020;
-  color: #eaf0ff;
-  line-height: 1.6;
-}
+    * { box-sizing: border-box; }
 
-h1, h2, h3 {
-  color: #ffffff;
-}
+    html { scroll-behavior: smooth; }
 
-pre {
-  background: #0a0f1f;
-  padding: 15px;
-  border-radius: 10px;
-  overflow-x: auto;
-}
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(180deg, #0a0f1e 0%, #0d1330 100%);
+      color: var(--text);
+      line-height: 1.65;
+    }
 
-code {
-  background: #111;
-  padding: 3px 6px;
-  border-radius: 6px;
-}
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 20px 0;
-}
+    a:hover { text-decoration: underline; }
 
-th, td {
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 10px;
-  text-align: left;
-}
+    .container {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+    }
 
-th {
-  background: rgba(255,255,255,0.1);
-}
-</style>
+    header.hero {
+      padding: 56px 0 34px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(circle at top, rgba(88,166,255,.16), transparent 35%);
+    }
+
+    .ascii {
+      display: inline-block;
+      text-align: left;
+      white-space: pre;
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      line-height: 1.15;
+      color: #d6e4ff;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin: 22px 0 8px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 18px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .badge {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: .95rem;
+      box-shadow: var(--shadow);
+    }
+
+    nav.toc {
+      margin: 26px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    nav.toc h2 {
+      margin-top: 0;
+      font-size: 1.25rem;
+    }
+
+    nav.toc ul {
+      margin: 0;
+      padding-left: 18px;
+      columns: 2;
+      gap: 32px;
+    }
+
+    main {
+      padding: 12px 0 64px;
+    }
+
+    section {
+      margin: 28px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.65rem;
+      color: #ffffff;
+    }
+
+    h3 {
+      margin-top: 28px;
+      color: #f4f7ff;
+      font-size: 1.2rem;
+    }
+
+    p, li { color: var(--muted); }
+
+    strong { color: var(--text); }
+
+    code {
+      font-family: "Fira Code", "Courier New", monospace;
+      background: rgba(255,255,255,.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: #fff;
+    }
+
+    pre {
+      background: #0a0f1d;
+      color: #e6edf3;
+      padding: 18px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      font-size: .92rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin-top: 12px;
+    }
+
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: rgba(88,166,255,.12);
+      color: #fff;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .notice {
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent-2);
+      background: rgba(255, 209, 102, 0.08);
+      border-radius: 10px;
+      color: #f8f2da;
+      margin-top: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 28px 16px 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 800px) {
+      nav.toc ul { columns: 1; }
+      section { padding: 20px; }
+      .ascii { font-size: 10px; }
+    }
+  </style>
 </head>
-
 <body>
+  <header class="hero">
+    <div class="container">
+      <div class="ascii"> ██████╗  █████╗  ██████╗██╗  ██╗    ███████╗███╗   ██╗██████╗
+ ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝    ██╔════╝████╗  ██║██╔══██╗
+ ██████╔╝███████║██║     █████╔╝     █████╗  ██╔██╗ ██║██║  ██║
+ ██╔══██╗██╔══██║██║     ██╔═██╗     ██╔══╝  ██║╚██╗██║██║  ██║
+ ██████╔╝██║  ██║╚██████╗██║  ██╗    ███████╗██║ ╚████║██████╔╝
+ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝</div>
 
-<h1>EDI 301 — Backend API</h1>
+      <h1>EDI 301 — Backend API</h1>
+      <p class="subtitle">
+        API REST para gestión de familias escolares<br>
+        Node.js · Express · MSSQL · Socket.io · Clean Architecture
+      </p>
 
-<p>API REST para gestión de familias escolares<br>
-Node.js · Express · MSSQL · Socket.io · Clean Architecture</p>
+      <div class="badges">
+        <span class="badge">Node.js 18+</span>
+        <span class="badge">Express 4.x</span>
+        <span class="badge">MSSQL SQL Server</span>
+        <span class="badge">Socket.io 4.x</span>
+      </div>
+    </div>
+  </header>
 
-<hr>
+  <main class="container">
+    <nav class="toc">
+      <h2>Índice</h2>
+      <ul>
+        <li><a href="#descripcion">Descripción</a></li>
+        <li><a href="#ramas">Ramas del Repositorio</a></li>
+        <li><a href="#arquitectura">Arquitectura</a></li>
+        <li><a href="#estructura">Estructura del Proyecto</a></li>
+        <li><a href="#requisitos">Requisitos</a></li>
+        <li><a href="#instalacion">Instalación</a></li>
+        <li><a href="#variables">Variables de Entorno</a></li>
+        <li><a href="#modulos">Módulos de la API</a></li>
+        <li><a href="#endpoints">Endpoints Principales</a></li>
+        <li><a href="#autenticacion">Autenticación</a></li>
+        <li><a href="#socketio">Tiempo Real con Socket.io</a></li>
+        <li><a href="#imagenes">Almacenamiento de Imágenes</a></li>
+        <li><a href="#push">Notificaciones Push</a></li>
+      </ul>
+    </nav>
 
-<h2>Descripción</h2>
+    <section id="descripcion">
+      <h2>Descripción</h2>
+      <p>
+        API REST desarrollada en <strong>Node.js + Express</strong> que sirve como backend de la aplicación móvil EDI 301.
+        Gestiona familias escolares, usuarios, publicaciones, mensajes, agenda y más. Incluye soporte para tiempo real
+        con <strong>Socket.io</strong>, notificaciones push con <strong>Firebase Cloud Messaging</strong> y almacenamiento
+        de imágenes con <strong>Cloudinary</strong>.
+      </p>
+    </section>
 
-<p>API REST desarrollada en <strong>Node.js + Express</strong> que sirve como backend de la aplicación móvil EDI 301. Gestiona familias escolares, usuarios, publicaciones, mensajes, agenda y más. Incluye soporte para tiempo real con <strong>Socket.io</strong>, notificaciones push con <strong>Firebase Cloud Messaging</strong> y almacenamiento de imágenes con <strong>Cloudinary</strong>.</p>
+    <section id="ramas">
+      <h2>Ramas del Repositorio</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Rama</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>main</code></td>
+            <td>Clean Architecture — sin framework de DI</td>
+          </tr>
+          <tr>
+            <td><code>di</code></td>
+            <td>Clean Architecture + Inyección de Dependencias (Constructor Injection + contenedor manual)</td>
+          </tr>
+        </tbody>
+      </table>
 
-<hr>
+      <pre><code>git checkout main   # versión Clean Architecture
+git checkout di     # versión con DI</code></pre>
+    </section>
 
-<h2>Ramas del Repositorio</h2>
+    <section id="arquitectura">
+      <h2>Arquitectura</h2>
+      <p>El proyecto implementa <strong>Clean Architecture</strong> con separación estricta en 4 capas:</p>
 
-<table>
-<tr><th>Rama</th><th>Descripción</th></tr>
-<tr><td>main</td><td>Clean Architecture — sin framework de DI</td></tr>
-<tr><td>di</td><td>Clean Architecture + Inyección de Dependencias</td></tr>
-</table>
+      <pre>┌──────────────────────────────────────────────────────────┐
+│                    INTERFACES (HTTP)                    │
+│         Controllers  ←  Routes  ←  Middleware           │
+├──────────────────────────────────────────────────────────┤
+│                     APPLICATION                         │
+│                     Use Cases                           │
+├──────────────────────────────────────────────────────────┤
+│                       DOMAIN                            │
+│               Queries  |  Entities                      │
+├──────────────────────────────────────────────────────────┤
+│                   INFRASTRUCTURE                        │
+│       Database  |  Storage  |  Notifications  | Socket │
+└──────────────────────────────────────────────────────────┘</pre>
 
-<pre><code>git checkout main
-git checkout di</code></pre>
+      <p>
+        <strong>Regla de dependencias:</strong> cada capa solo conoce la capa inmediatamente inferior.
+        Los use cases nunca importan controllers; los controllers nunca importan infraestructura directamente.
+      </p>
 
-<hr>
+      <h3>Rama <code>di</code> — Inyección de Dependencias</h3>
+      <p>En la rama <code>di</code> se agrega un contenedor DI manual:</p>
 
-<h2>Arquitectura</h2>
+      <pre><code>bootstrap.js  →  container.js
+     │
+     ├── register('db',              () => require('./database/db'))
+     ├── register('authUseCase',     (c) => new AuthUseCase(c.get('db'), ...))
+     ├── register('authController',  (c) => new AuthController(c.get('authUseCase')))
+     └── ...</code></pre>
 
-<pre>
-INTERFACES (HTTP)
-APPLICATION (Use Cases)
-DOMAIN (Entities, Queries)
-INFRASTRUCTURE (DB, Storage, Socket)
-</pre>
+      <p>Los módulos migrados a DI son: <code>auth</code>, <code>familias</code>, <code>usuarios</code>.</p>
+    </section>
 
-<p>Regla: cada capa solo conoce la inferior.</p>
+    <section id="estructura">
+      <h2>Estructura del Proyecto</h2>
 
-<hr>
-
-<h2>Estructura del Proyecto</h2>
-
-<pre><code>src/
-├── server.js
-├── app.js
+      <pre><code>src/
+├── server.js                          # Arranque del servidor HTTP + Socket.io
+├── app.js                             # Express: middleware, rutas, static files
+│
 ├── config/
-├── infrastructure/
-├── domain/
-├── application/
-├── interfaces/
+│   └── database.js                    # Configuración de conexión MSSQL
+│
+├── infrastructure/                    # Implementaciones externas
+│   ├── database/
+│   │   ├── db.js                      # Pool de conexiones MSSQL + queryP()
+│   │   └── script_DB.sql              # Script de creación de BD
+│   ├── storage/
+│   │   ├── cloudinary.provider.js     # Cliente Cloudinary
+│   │   └── image.storage.js           # Optimización y subida de imágenes (sharp)
+│   ├── notifications/
+│   │   └── firebase.provider.js       # Firebase Admin SDK (FCM multicast)
+│   └── socket/
+│       └── socket.service.js          # Gestión de rooms y eventos Socket.io
+│
+├── domain/                            # Reglas de negocio puras
+│   └── repositories/
+│       └── queries/
+│           ├── usuario.queries.js     # SQL para usuarios
+│           ├── familia.queries.js     # SQL para familias
+│           └── index.queries.js       # SQL para todos los demás módulos
+│
+├── application/                       # Casos de uso
+│   └── use-cases/
+│       ├── auth/                      # Login, logout, reset password
+│       ├── usuarios/                  # CRUD usuarios, búsqueda, FCM token
+│       ├── familias/                  # CRUD familias, miembros, fotos
+│       ├── miembros/                  # Agregar/eliminar miembros
+│       ├── publicaciones/             # Feed, likes, comentarios, aprobación
+│       ├── agenda/                    # Eventos, recordatorios
+│       ├── mensajes/                  # Mensajes de chat familiar
+│       ├── chat/                      # Chat privado, grupos
+│       ├── estados/                   # Estados de usuario (activo, ausente...)
+│       ├── fotos/                     # Galería de fotos de familia
+│       ├── solicitudes/               # Solicitudes de ingreso a familia
+│       ├── provisiones/               # Provisiones escolares
+│       ├── det-provisiones/           # Detalle de provisiones
+│       ├── roles/                     # Roles del sistema
+│       ├── search/                    # Búsqueda global
+│       └── shared/
+│           └── birthday.usecase.js    # Cron job de cumpleaños
+│
+├── interfaces/                        # Adaptadores HTTP
+│   └── http/
+│       ├── controllers/               # Un controller por módulo
+│       ├── routes/                    # Un archivo de rutas por módulo
+│       │   └── index.js               # Router principal que monta todas las rutas
+│       └── middleware/
+│           ├── auth.guard.js          # Verificación de session_token
+│           ├── role.guard.js          # Control de acceso por rol
+│           └── validate.middleware.js # Validación de body con Joi
+│
 └── shared/
-</code></pre>
+    ├── errors/
+    │   └── app.error.js               # BadRequestError, NotFoundError, UnauthorizedError
+    └── utils/
+        ├── hash.js                    # bcrypt (hashPassword, comparePassword)
+        ├── token.js                   # Generación de session tokens
+        ├── http.response.js           # Helpers: ok(), created(), bad(), notFound(), fail()
+        └── name.formatter.js          # Formateo de nombres en español</code></pre>
+    </section>
 
-<hr>
+    <section id="requisitos">
+      <h2>Requisitos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Herramienta</th>
+            <th>Versión mínima</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Node.js</td><td>18+</td></tr>
+          <tr><td>npm</td><td>9+</td></tr>
+          <tr><td>SQL Server</td><td>2019+</td></tr>
+          <tr><td>Cuenta Cloudinary</td><td>Free tier o superior</td></tr>
+          <tr><td>Proyecto Firebase</td><td>Con Cloud Messaging habilitado</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-<h2>Requisitos</h2>
-
-<table>
-<tr><th>Herramienta</th><th>Versión mínima</th></tr>
-<tr><td>Node.js</td><td>18+</td></tr>
-<tr><td>npm</td><td>9+</td></tr>
-<tr><td>SQL Server</td><td>2019+</td></tr>
-<tr><td>Cloudinary</td><td>Cuenta activa</td></tr>
-<tr><td>Firebase</td><td>FCM habilitado</td></tr>
-</table>
-
-<hr>
-
-<h2>Instalación</h2>
-
-<pre><code># Clonar
+    <section id="instalacion">
+      <h2>Instalación</h2>
+      <pre><code># 1. Clonar el repositorio
 git clone https://github.com/SooyAldahir/Back-End-Clean.git
+cd Back-End-Clean
 
-# Instalar
+# 2. Instalar dependencias
 npm install
 
-# Variables
+# 3. Configurar variables de entorno
 cp .env.example .env
+# Edita .env con tus credenciales
 
-# Ejecutar
+# 4. Crear la base de datos
+# Ejecuta src/infrastructure/database/script_DB.sql en SQL Server Management Studio
+
+# 5. Iniciar en desarrollo (con nodemon)
 npm run dev
-</code></pre>
 
-<hr>
+# 6. Iniciar en producción
+npm start</code></pre>
+    </section>
 
-<h2>Variables de Entorno</h2>
+    <section id="variables">
+      <h2>Variables de Entorno</h2>
+      <p>Crea un archivo <code>.env</code> en la raíz del proyecto:</p>
 
-<pre><code>DB_USER=sa
+      <pre><code># ─── Base de Datos ────────────────────────────────────────
+DB_USER=sa
 DB_PASSWORD=tu_password
 DB_SERVER=localhost
 DB_DATABASE=EDI301
+DB_PORT=1433
+
+# ─── Servidor ─────────────────────────────────────────────
 PORT=3000
+NODE_ENV=development
 
-CLOUDINARY_CLOUD_NAME=xxx
-CLOUDINARY_API_KEY=xxx
-CLOUDINARY_API_SECRET=xxx
+# ─── Cloudinary ───────────────────────────────────────────
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
 
+# ─── Firebase ─────────────────────────────────────────────
+# Ruta al archivo serviceAccountKey.json (NO subir a Git)
 FIREBASE_CREDENTIAL_PATH=./serviceAccountKey.json
 
-JWT_SECRET=super_secret</code></pre>
+# ─── Auth ─────────────────────────────────────────────────
+JWT_SECRET=tu_secreto_muy_largo_y_seguro</code></pre>
 
-<hr>
+      <div class="notice">
+        <strong>⚠️ Nunca</strong> subas <code>.env</code> ni <code>serviceAccountKey.json</code> a Git — ya están en <code>.gitignore</code>.<br>
+        Si lo subiste accidentalmente: revoca la clave en Google Cloud Console y genera una nueva.
+      </div>
+    </section>
 
-<h2>Módulos de la API</h2>
+    <section id="modulos">
+      <h2>Módulos de la API</h2>
 
-<table>
-<tr><th>Módulo</th><th>Ruta</th></tr>
-<tr><td>Auth</td><td>/api/auth</td></tr>
-<tr><td>Usuarios</td><td>/api/usuarios</td></tr>
-<tr><td>Familias</td><td>/api/familias</td></tr>
-<tr><td>Publicaciones</td><td>/api/publicaciones</td></tr>
-<tr><td>Agenda</td><td>/api/agenda</td></tr>
-<tr><td>Chat</td><td>/api/chat</td></tr>
-</table>
+      <p>Todos los endpoints están bajo el prefijo <code>/api/</code>.</p>
 
-<hr>
+      <table>
+        <thead>
+          <tr>
+            <th>Módulo</th>
+            <th>Ruta base</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Auth</td><td><code>/api/auth</code></td><td>Login, logout, reset password</td></tr>
+          <tr><td>Usuarios</td><td><code>/api/usuarios</code></td><td>CRUD, búsqueda, FCM token</td></tr>
+          <tr><td>Familias</td><td><code>/api/familias</code></td><td>CRUD familias, fotos, descripción</td></tr>
+          <tr><td>Miembros</td><td><code>/api/miembros</code></td><td>Agregar/eliminar integrantes</td></tr>
+          <tr><td>Publicaciones</td><td><code>/api/publicaciones</code></td><td>Feed, likes, comentarios, aprobación</td></tr>
+          <tr><td>Agenda</td><td><code>/api/agenda</code></td><td>Eventos escolares</td></tr>
+          <tr><td>Mensajes</td><td><code>/api/mensajes</code></td><td>Chat familiar</td></tr>
+          <tr><td>Chat</td><td><code>/api/chat</code></td><td>Chat privado y grupal</td></tr>
+          <tr><td>Estados</td><td><code>/api/estados</code></td><td>Estado de presencia del alumno</td></tr>
+          <tr><td>Fotos</td><td><code>/api/fotos</code></td><td>Galería de fotos de familia</td></tr>
+          <tr><td>Solicitudes</td><td><code>/api/solicitudes</code></td><td>Solicitudes de familia</td></tr>
+          <tr><td>Provisiones</td><td><code>/api/provisiones</code></td><td>Provisiones escolares</td></tr>
+          <tr><td>Detalle Prov.</td><td><code>/api/detalle-provision</code></td><td>Detalle de provisiones</td></tr>
+          <tr><td>Roles</td><td><code>/api/roles</code></td><td>Roles del sistema</td></tr>
+          <tr><td>Búsqueda</td><td><code>/api/search</code></td><td>Búsqueda global de usuarios y familias</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-<h2>Endpoints Principales</h2>
+    <section id="endpoints">
+      <h2>Endpoints Principales</h2>
 
-<h3>Auth</h3>
-<pre><code>POST /api/auth/login
-POST /api/auth/logout
-POST /api/auth/reset-password</code></pre>
+      <h3>Auth</h3>
+      <pre><code>POST   /api/auth/login           Body: { login, password }
+POST   /api/auth/logout          Header: Authorization: Bearer &lt;token&gt;
+POST   /api/auth/reset-password  Body: { correo, nuevaContrasena }</code></pre>
 
-<h3>Usuarios</h3>
-<pre><code>GET /api/usuarios
-GET /api/usuarios/:id
-POST /api/usuarios
-PUT /api/usuarios/:id
-DELETE /api/usuarios/:id</code></pre>
+      <h3>Usuarios</h3>
+      <pre><code>GET    /api/usuarios                    ?tipo=ALUMNO&amp;q=juan
+GET    /api/usuarios/:id
+POST   /api/usuarios                    Body: datos del usuario
+PUT    /api/usuarios/:id                Body/multipart: datos + foto (campo: 'foto')
+DELETE /api/usuarios/:id
+PATCH  /api/usuarios/:id/email          Body: { correo }
+PUT    /api/usuarios/update-token       Body: { id_usuario, token }
+GET    /api/usuarios/cumpleanos
+GET    /api/usuarios/familias/by-doc/search  ?matricula=123 | ?numEmpleado=456</code></pre>
 
-<h3>Familias</h3>
-<pre><code>GET /api/familias
-POST /api/familias
-PUT /api/familias/:id
-DELETE /api/familias/:id</code></pre>
+      <h3>Familias</h3>
+      <pre><code>GET    /api/familias                    Lista todas
+GET    /api/familias/available          Para asignar alumnos
+GET    /api/familias/reporte-completo   Reporte con miembros
+GET    /api/familias/search             ?name=García
+GET    /api/familias/por-ident/:ident   Buscar por matrícula/empleado
+GET    /api/familias/:id
+POST   /api/familias                    Body: { nombre_familia, residencia, papa_id, mama_id, hijos[] }
+PUT    /api/familias/:id
+DELETE /api/familias/:id
+PATCH  /api/familias/:id/fotos          Multipart: foto_perfil, foto_portada
+PATCH  /api/familias/:id/descripcion    Body: { descripcion }</code></pre>
 
-<h3>Publicaciones</h3>
-<pre><code>GET /api/publicaciones/feed/global
-POST /api/publicaciones
-POST /api/publicaciones/:id/like
-</code></pre>
+      <h3>Publicaciones (Feed)</h3>
+      <pre><code>GET    /api/publicaciones/feed/global        Paginado: ?page=1&amp;limit=50
+GET    /api/publicaciones/familia/:id        Feed por familia
+GET    /api/publicaciones/familia/:id/pendientes
+GET    /api/publicaciones/mis-posts
+POST   /api/publicaciones                    Multipart: mensaje, imagen, id_familia
+PUT    /api/publicaciones/:id/estado         Body: { estado: 'Publicado' | 'Rechazada' }
+DELETE /api/publicaciones/:id
+POST   /api/publicaciones/:id/like
+GET    /api/publicaciones/:id/comentarios
+POST   /api/publicaciones/:id/comentarios    Body: { contenido }
+DELETE /api/publicaciones/comentarios/:id</code></pre>
+    </section>
 
-<hr>
+    <section id="autenticacion">
+      <h2>Autenticación</h2>
+      <p>La API usa <strong>session tokens</strong> almacenados en la base de datos (no JWT stateless).</p>
 
-<h2>Autenticación</h2>
+      <pre><code>Cada request autenticado debe incluir:
+Authorization: Bearer &lt;session_token&gt;</code></pre>
 
-<pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+      <p>
+        El middleware <code>auth.guard.js</code> valida el token contra la tabla
+        <code>EDI.Usuarios.session_token</code>.
+      </p>
 
-<p>Se usa session_token almacenado en base de datos.</p>
+      <h3>Roles disponibles</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rol</th>
+            <th>Permisos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>Admin</code></td><td>Acceso total</td></tr>
+          <tr><td><code>PapaEDI</code> / <code>MamaEDI</code></td><td>Gestión familiar, aprobación de posts</td></tr>
+          <tr><td><code>Padre</code> / <code>Madre</code> / <code>Tutor</code></td><td>Igual que PapaEDI/MamaEDI</td></tr>
+          <tr><td><code>HijoEDI</code> / <code>Hijo</code> / <code>Alumno</code></td><td>Solo lectura, chat, feed</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-<hr>
+    <section id="socketio">
+      <h2>Tiempo Real con Socket.io</h2>
+      <p>El servidor mantiene rooms para notificaciones en tiempo real:</p>
 
-<h2>Socket.io</h2>
+      <pre><code>// Rooms disponibles
+`user_${id_usuario}`      // Eventos personales
+`familia_${id_familia}`   // Eventos de la familia
+'institucional'           // Eventos globales (todos los usuarios)
+`chat_${id_sala}`         // Mensajes de chat privado/grupal</code></pre>
 
-<pre><code>user_{id_usuario}
-familia_{id_familia}
-institucional
-chat_{id_sala}</code></pre>
+      <h3>Eventos emitidos por el servidor</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Room</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>feed_actualizado</code></td><td><code>institucional</code></td><td>Nueva publicación aprobada</td></tr>
+          <tr><td><code>post_creado</code></td><td><code>familia_X</code></td><td>Post nuevo en la familia</td></tr>
+          <tr><td><code>post_estado_actualizado</code></td><td><code>user_X</code></td><td>Tu post fue aprobado/rechazado</td></tr>
+          <tr><td><code>nuevo_mensaje</code></td><td><code>chat_X</code></td><td>Mensaje en chat privado</td></tr>
+          <tr><td><code>nuevo_mensaje_familia</code></td><td><code>familia_X</code></td><td>Mensaje en chat familiar</td></tr>
+          <tr><td><code>evento_creado</code></td><td><code>institucional</code></td><td>Nuevo evento en agenda</td></tr>
+          <tr><td><code>familia_creada</code></td><td><code>institucional</code></td><td>Nueva familia registrada</td></tr>
+          <tr><td><code>cumpleanos_hoy</code></td><td><code>institucional</code></td><td>Recordatorio de cumpleaños (cron)</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-<hr>
+    <section id="imagenes">
+      <h2>Almacenamiento de Imágenes</h2>
+      <p>Las imágenes se procesan con <strong>sharp</strong> (optimización) y se suben a <strong>Cloudinary</strong>:</p>
 
-<h2>Almacenamiento de Imágenes</h2>
+      <pre><code>Flujo:
+  archivo recibido (express-fileupload)
+    → validación (tipo MIME, tamaño máx 5MB)
+    → redimensionado y compresión (sharp)
+    → subida a Cloudinary
+    → URL guardada en BD</code></pre>
 
-<pre><code>archivo → sharp → cloudinary → URL → BD</code></pre>
+      <p>Carpetas en Cloudinary:</p>
+      <ul>
+        <li><code>edi301/perfiles/</code> — fotos de perfil de usuarios</li>
+        <li><code>edi301/familias/</code> — fotos de perfil y portada de familias</li>
+        <li><code>edi301/publicaciones/</code> — imágenes de posts</li>
+        <li><code>edi301/agenda/</code> — imágenes de eventos</li>
+      </ul>
+    </section>
 
-<hr>
+    <section id="push">
+      <h2>Notificaciones Push</h2>
+      <p>Se usa <strong>Firebase Admin SDK</strong> para enviar notificaciones multicast a dispositivos registrados:</p>
 
-<h2>Notificaciones Push</h2>
-
-<pre><code>sendMulticastNotification(tokens, {
+      <pre><code>// Ejemplo: notificar a los padres de una familia
+const tokens = await queryP(Q.getPadresFamilia, { idFam });
+await sendMulticastNotification(tokens, {
   title: 'Nueva publicación',
-  body: 'Hay un nuevo post'
+  body:  'Hay un nuevo post en tu familia',
+  data:  { tipo: 'POST', id_familia: String(id_familia) },
 });</code></pre>
 
+      <p>Los tokens FCM se actualizan automáticamente desde la app Flutter al iniciar sesión.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Desarrollado con ❤️ para Capellania Universitaria - Universidad Linda Vista SA. de CV.
+  </footer>
 </body>
 </html>

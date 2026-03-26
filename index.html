@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EDI 301 Backend API</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+  background: #0b1020;
+  color: #eaf0ff;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  color: #ffffff;
+}
+
+pre {
+  background: #0a0f1f;
+  padding: 15px;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+code {
+  background: #111;
+  padding: 3px 6px;
+  border-radius: 6px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+}
+
+th, td {
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background: rgba(255,255,255,0.1);
+}
+</style>
+</head>
+
+<body>
+
+<h1>EDI 301 — Backend API</h1>
+
+<p>API REST para gestión de familias escolares<br>
+Node.js · Express · MSSQL · Socket.io · Clean Architecture</p>
+
+<hr>
+
+<h2>Descripción</h2>
+
+<p>API REST desarrollada en <strong>Node.js + Express</strong> que sirve como backend de la aplicación móvil EDI 301. Gestiona familias escolares, usuarios, publicaciones, mensajes, agenda y más. Incluye soporte para tiempo real con <strong>Socket.io</strong>, notificaciones push con <strong>Firebase Cloud Messaging</strong> y almacenamiento de imágenes con <strong>Cloudinary</strong>.</p>
+
+<hr>
+
+<h2>Ramas del Repositorio</h2>
+
+<table>
+<tr><th>Rama</th><th>Descripción</th></tr>
+<tr><td>main</td><td>Clean Architecture — sin framework de DI</td></tr>
+<tr><td>di</td><td>Clean Architecture + Inyección de Dependencias</td></tr>
+</table>
+
+<pre><code>git checkout main
+git checkout di</code></pre>
+
+<hr>
+
+<h2>Arquitectura</h2>
+
+<pre>
+INTERFACES (HTTP)
+APPLICATION (Use Cases)
+DOMAIN (Entities, Queries)
+INFRASTRUCTURE (DB, Storage, Socket)
+</pre>
+
+<p>Regla: cada capa solo conoce la inferior.</p>
+
+<hr>
+
+<h2>Estructura del Proyecto</h2>
+
+<pre><code>src/
+├── server.js
+├── app.js
+├── config/
+├── infrastructure/
+├── domain/
+├── application/
+├── interfaces/
+└── shared/
+</code></pre>
+
+<hr>
+
+<h2>Requisitos</h2>
+
+<table>
+<tr><th>Herramienta</th><th>Versión mínima</th></tr>
+<tr><td>Node.js</td><td>18+</td></tr>
+<tr><td>npm</td><td>9+</td></tr>
+<tr><td>SQL Server</td><td>2019+</td></tr>
+<tr><td>Cloudinary</td><td>Cuenta activa</td></tr>
+<tr><td>Firebase</td><td>FCM habilitado</td></tr>
+</table>
+
+<hr>
+
+<h2>Instalación</h2>
+
+<pre><code># Clonar
+git clone https://github.com/SooyAldahir/Back-End-Clean.git
+
+# Instalar
+npm install
+
+# Variables
+cp .env.example .env
+
+# Ejecutar
+npm run dev
+</code></pre>
+
+<hr>
+
+<h2>Variables de Entorno</h2>
+
+<pre><code>DB_USER=sa
+DB_PASSWORD=tu_password
+DB_SERVER=localhost
+DB_DATABASE=EDI301
+PORT=3000
+
+CLOUDINARY_CLOUD_NAME=xxx
+CLOUDINARY_API_KEY=xxx
+CLOUDINARY_API_SECRET=xxx
+
+FIREBASE_CREDENTIAL_PATH=./serviceAccountKey.json
+
+JWT_SECRET=super_secret</code></pre>
+
+<hr>
+
+<h2>Módulos de la API</h2>
+
+<table>
+<tr><th>Módulo</th><th>Ruta</th></tr>
+<tr><td>Auth</td><td>/api/auth</td></tr>
+<tr><td>Usuarios</td><td>/api/usuarios</td></tr>
+<tr><td>Familias</td><td>/api/familias</td></tr>
+<tr><td>Publicaciones</td><td>/api/publicaciones</td></tr>
+<tr><td>Agenda</td><td>/api/agenda</td></tr>
+<tr><td>Chat</td><td>/api/chat</td></tr>
+</table>
+
+<hr>
+
+<h2>Endpoints Principales</h2>
+
+<h3>Auth</h3>
+<pre><code>POST /api/auth/login
+POST /api/auth/logout
+POST /api/auth/reset-password</code></pre>
+
+<h3>Usuarios</h3>
+<pre><code>GET /api/usuarios
+GET /api/usuarios/:id
+POST /api/usuarios
+PUT /api/usuarios/:id
+DELETE /api/usuarios/:id</code></pre>
+
+<h3>Familias</h3>
+<pre><code>GET /api/familias
+POST /api/familias
+PUT /api/familias/:id
+DELETE /api/familias/:id</code></pre>
+
+<h3>Publicaciones</h3>
+<pre><code>GET /api/publicaciones/feed/global
+POST /api/publicaciones
+POST /api/publicaciones/:id/like
+</code></pre>
+
+<hr>
+
+<h2>Autenticación</h2>
+
+<pre><code>Authorization: Bearer &lt;token&gt;</code></pre>
+
+<p>Se usa session_token almacenado en base de datos.</p>
+
+<hr>
+
+<h2>Socket.io</h2>
+
+<pre><code>user_{id_usuario}
+familia_{id_familia}
+institucional
+chat_{id_sala}</code></pre>
+
+<hr>
+
+<h2>Almacenamiento de Imágenes</h2>
+
+<pre><code>archivo → sharp → cloudinary → URL → BD</code></pre>
+
+<hr>
+
+<h2>Notificaciones Push</h2>
+
+<pre><code>sendMulticastNotification(tokens, {
+  title: 'Nueva publicación',
+  body: 'Hay un nuevo post'
+});</code></pre>
+
+</body>
+</html>
